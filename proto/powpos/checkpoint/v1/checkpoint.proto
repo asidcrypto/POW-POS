@@ -1,0 +1,11 @@
+syntax = "proto3";
+package powpos.checkpoint.v1;
+
+option go_package = "powpos/x/checkpoint/types";
+
+// Checkpoint stores block metadata for cross-chain commitments.
+message Checkpoint {
+  uint64 height = 1;
+  bytes app_hash = 2;
+  int64 timestamp = 3;
+}

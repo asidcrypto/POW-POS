@@ -1,0 +1,17 @@
+syntax = "proto3";
+package powpos.powpos.v1;
+
+import "amino/amino.proto";
+import "gogoproto/gogo.proto";
+import "powpos/powpos/v1/params.proto";
+
+option go_package = "powpos/x/powpos/types";
+
+// GenesisState defines the powpos module's genesis state.
+message GenesisState {
+  // params defines all the parameters of the module.
+  Params params = 1 [
+    (gogoproto.nullable) = false,
+    (amino.dont_omitempty) = true
+  ];
+}
