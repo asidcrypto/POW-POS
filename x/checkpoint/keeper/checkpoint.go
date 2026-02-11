@@ -7,7 +7,6 @@ import (
 	"time"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"google.golang.org/protobuf/types/known/timestamppb"
 
 	"powpos/x/checkpoint/types"
 )
@@ -25,7 +24,7 @@ func (k Keeper) MaybeCreateCheckpoint(ctx context.Context) error {
 	checkpoint := types.Checkpoint{
 		Height:    height,
 		AppHash:   append([]byte(nil), header.AppHash...),
-		Timestamp: timestamppb.New(sdkCtx.BlockTime().UTC()),
+		Timestamp: sdkCtx.BlockTime().UTC().Unix(),
 	}
 
 	if err := k.Checkpoints.Set(ctx, height, checkpoint); err != nil {
@@ -41,7 +40,7 @@ func (k Keeper) MaybeCreateCheckpoint(ctx context.Context) error {
 			types.EventTypeCheckpointCreated,
 			sdk.NewAttribute(types.AttributeKeyHeight, strconv.FormatUint(height, 10)),
 			sdk.NewAttribute(types.AttributeKeyAppHash, hex.EncodeToString(checkpoint.AppHash)),
-			sdk.NewAttribute(types.AttributeKeyTimestamp, checkpoint.Timestamp.AsTime().UTC().Format(time.RFC3339Nano)),
+			sdk.NewAttribute(types.AttributeKeyTimestamp, time.Unix(checkpoint.Timestamp, 0).UTC().Format(time.RFC3339Nano)),
 		),
 	)
 

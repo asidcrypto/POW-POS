@@ -5,7 +5,6 @@ import (
 	"time"
 
 	"github.com/stretchr/testify/require"
-	"google.golang.org/protobuf/types/known/timestamppb"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
@@ -40,7 +39,7 @@ func TestMaybeCreateCheckpoint(t *testing.T) {
 	require.NoError(t, err)
 	require.Equal(t, uint64(20), got.Height)
 	require.Equal(t, header.AppHash, got.AppHash)
-	require.Equal(t, timestamppb.New(time.Unix(1700000020, 0).UTC()), got.Timestamp)
+	require.Equal(t, int64(1700000020), got.Timestamp)
 
 	latest, err := f.keeper.GetLatestCheckpoint(ctxTarget)
 	require.NoError(t, err)

@@ -2,9 +2,6 @@ package keeper_test
 
 import (
 	"testing"
-	"time"
-
-	"google.golang.org/protobuf/types/known/timestamppb"
 
 	"powpos/x/checkpoint/types"
 
@@ -18,7 +15,7 @@ func TestGenesis(t *testing.T) {
 			{
 				Height:    20,
 				AppHash:   []byte{0x01, 0x02, 0x03},
-				Timestamp: timestamppb.New(time.Unix(1700000000, 0).UTC()),
+				Timestamp: 1700000000,
 			},
 		},
 	}

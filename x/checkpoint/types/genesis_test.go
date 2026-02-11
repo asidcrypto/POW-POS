@@ -2,10 +2,8 @@ package types_test
 
 import (
 	"testing"
-	"time"
 
 	"github.com/stretchr/testify/require"
-	"google.golang.org/protobuf/types/known/timestamppb"
 
 	"powpos/x/checkpoint/types"
 )
@@ -29,7 +27,7 @@ func TestGenesisState_Validate(t *testing.T) {
 					{
 						Height:    20,
 						AppHash:   []byte{0x01, 0x02},
-						Timestamp: timestamppb.New(time.Unix(1700000000, 0).UTC()),
+						Timestamp: 1700000000,
 					},
 				},
 			},

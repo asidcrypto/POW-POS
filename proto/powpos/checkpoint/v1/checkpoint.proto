@@ -1,13 +1,11 @@
 syntax = "proto3";
 package powpos.checkpoint.v1;
 
-import "google/protobuf/timestamp.proto";
-
 option go_package = "powpos/x/checkpoint/types";
 
 // Checkpoint stores block metadata for cross-chain commitments.
 message Checkpoint {
   uint64 height = 1;
   bytes app_hash = 2;
-  google.protobuf.Timestamp timestamp = 3;
+  int64 timestamp = 3;
 }

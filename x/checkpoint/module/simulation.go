@@ -1,8 +1,6 @@
 package checkpoint
 
 import (
-	"cosmossdk.io/core/address"
-	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 
@@ -16,7 +14,7 @@ func (AppModule) GenerateGenesisState(simState *module.SimulationState) {
 		accs[i] = acc.Address.String()
 	}
 	checkpointGenesis := types.GenesisState{
-		Params:	types.DefaultParams(),
+		Params: types.DefaultParams(),
 	}
 	simState.GenState[types.ModuleName] = simState.Cdc.MustMarshalJSON(&checkpointGenesis)
 }
@@ -32,6 +30,5 @@ func (am AppModule) WeightedOperations(simState module.SimulationState) []simtyp
 
 // ProposalMsgs returns msgs used for governance proposals for simulations.
 func (am AppModule) ProposalMsgs(simState module.SimulationState) []simtypes.WeightedProposalMsg {
-	return []simtypes.WeightedProposalMsg{
-	}
+	return []simtypes.WeightedProposalMsg{}
 }

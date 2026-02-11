@@ -2,12 +2,10 @@ package keeper_test
 
 import (
 	"testing"
-	"time"
 
 	"github.com/stretchr/testify/require"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
-	"google.golang.org/protobuf/types/known/timestamppb"
 
 	"powpos/x/checkpoint/keeper"
 	"powpos/x/checkpoint/types"
@@ -20,7 +18,7 @@ func TestQueryLatestCheckpoint(t *testing.T) {
 	checkpoint := types.Checkpoint{
 		Height:    40,
 		AppHash:   []byte{0xab, 0xcd},
-		Timestamp: timestamppb.New(time.Unix(1700000040, 0).UTC()),
+		Timestamp: 1700000040,
 	}
 	require.NoError(t, f.keeper.Checkpoints.Set(f.ctx, checkpoint.Height, checkpoint))
 	require.NoError(t, f.keeper.LatestCheckpointHeight.Set(f.ctx, checkpoint.Height))
@@ -37,7 +35,7 @@ func TestQueryCheckpointByHeight(t *testing.T) {
 	checkpoint := types.Checkpoint{
 		Height:    60,
 		AppHash:   []byte{0x11, 0x22, 0x33},
-		Timestamp: timestamppb.New(time.Unix(1700000060, 0).UTC()),
+		Timestamp: 1700000060,
 	}
 	require.NoError(t, f.keeper.Checkpoints.Set(f.ctx, checkpoint.Height, checkpoint))
 
