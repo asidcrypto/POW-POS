@@ -1,92 +1,97 @@
-# PoS L2 Anchored to PoW (Tendermint-style Demo)
+# PoS L2 Anchored to PoW (Go Demo)
 
-This repository is a **demo** of a Layer 2 architecture where:
+This repo contains a **Go-only architecture demo** for:
 
-- L2 blocks are produced with **Tendermint-style Proof of Stake finality** (2/3+ stake signatures).
-- The L2 periodically writes **checkpoints** to a Bitcoin-like **Proof of Work** chain.
-- A block can be considered:
-  - `PoS-final` right after supermajority commit.
-  - `PoW-final` after its checkpoint receives enough Bitcoin confirmations.
+- Tendermint-style **PoS L2 finality** (block commit requires >2/3 stake signing).
+- Periodic L2 **checkpoint anchoring** to a Bitcoin-like PoW chain.
+- Security progression from `PoS-final` to `PoW-final` after required confirmations.
 
-This is designed to show *how the flow can work* for presentations and prototyping.
+It is a deterministic simulator for explaining design and tradeoffs.
 
-## What this demo is (and is not)
+## What this proves
 
-### It demonstrates
-- Fast L2 finality with validator stake voting.
-- Periodic checkpoint anchoring into a PoW chain.
-- Confirmation-based security escalation from PoS-final to PoW-final.
+- You can combine fast PoS execution with slower PoW settlement anchoring.
+- Not every L2 block needs direct PoW settlement if you checkpoint at intervals.
+- A clear policy can define when an anchored state is considered final.
 
-### It does not claim
-- Full trustless inheritance of Bitcoin security by itself.
-- Production bridge security (fraud proofs, light client proofs, reorg handling, etc.).
-- A full Cosmos SDK chain implementation.
+## What this does not prove
+
+- Full production trustlessness by itself.
+- Real Bitcoin or CometBFT networking.
+- Fraud/validity proof systems and adversarial bridge hardening.
 
 ---
 
-## Quickstart (macOS)
+## Quickstart (this repository)
 
-### 1) Prerequisites
-- macOS with `python3` available.
-  - Verify: `python3 --version`
-
-### 2) Clone and enter repo
 ```bash
-git clone <your-repo-url>
-cd POW-POS
+go test ./...
+go run ./cmd/powposdemo
 ```
 
-### 3) Run tests
-```bash
-python3 -m unittest discover -s tests -v
-```
+Example with custom settings:
 
-### 4) Run the demo
 ```bash
-python3 scripts/run_demo.py
-```
-
-Optional flags:
-```bash
-python3 scripts/run_demo.py \
+go run ./cmd/powposdemo \
   --l2-blocks 15 \
   --checkpoint-interval 3 \
   --pow-confirmations 2 \
   --mine-btc-every 2
 ```
 
-You will see:
-- L2 blocks committing with stake signatures.
-- Checkpoints submitted at interval heights.
-- Bitcoin blocks mined and confirmations increasing.
-- A final table showing which L2 blocks are PoS-final and PoW-final.
-
 ---
 
-## How it maps to your real goal
+## Zero-to-demo on macOS (copy/paste)
 
-For a production-grade version on top of Bitcoin:
+If you want to start from an empty folder:
 
-1. Replace the L2 simulator with a real **CometBFT (Tendermint)** app chain (usually Cosmos SDK + custom modules).
-2. Run Bitcoin `regtest`/`testnet` and submit checkpoint transactions from a relayer.
-3. Add verifier logic:
-   - checkpoint inclusion proofs,
-   - required confirmation policy,
-   - reorg and liveness handling.
-4. Add slashing/dispute mechanisms for invalid checkpoints or validator faults.
+1) Install Go (if needed):
 
-This demo gives you a concrete narrative: **fast PoS execution + delayed PoW anchoring for stronger settlement assurances**.
+```bash
+brew install go
+go version
+```
+
+2) Create project and initialize module:
+
+```bash
+mkdir -p pow-pos-go-demo
+cd pow-pos-go-demo
+go mod init pow-pos-go-demo
+mkdir -p demo cmd/powposdemo
+```
+
+3) Create files (copy from this repo):
+- `demo/core.go`
+- `demo/simulation.go`
+- `demo/demo_test.go`
+- `cmd/powposdemo/main.go`
+
+4) Run:
+
+```bash
+go test ./...
+go run ./cmd/powposdemo
+```
 
 ---
 
 ## Project layout
 
 ```text
-pow_pos_demo/
-  core.py          # Tendermint-style PoS, Bitcoin-style PoW, bridge logic
-  simulation.py    # Deterministic demo scenario + security report builder
-scripts/
-  run_demo.py      # CLI entrypoint
-tests/
-  test_demo.py     # Unit tests
+cmd/powposdemo/main.go  # CLI runner
+demo/core.go            # PoS chain, PoW chain, checkpoint bridge
+demo/simulation.go      # Scenario runner + report builder
+demo/demo_test.go       # Unit tests
 ```
+
+---
+
+## Mapping this to a real chain
+
+For a production version aligned to your idea:
+
+1. Build a real app chain with Cosmos SDK + CometBFT.
+2. Submit checkpoints to Bitcoin regtest/testnet/mainnet using a relayer.
+3. Add checkpoint verification logic and reorg handling.
+4. Add validator slashing/dispute paths for invalid behavior.
