@@ -31,7 +31,9 @@ func main() {
 		log.Fatalf("run demo: %v", err)
 	}
 
-	fmt.Println("\n=== PoS-on-PoW Demo (Tendermint-style + Bitcoin-style) ===\n")
+	fmt.Println()
+	fmt.Println("=== PoS-on-PoW Demo (Tendermint-style + Bitcoin-style) ===")
+	fmt.Println()
 	for _, event := range events {
 		fmt.Printf("[%02d] %s\n", event.Step, event.Message)
 	}
