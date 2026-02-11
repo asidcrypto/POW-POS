@@ -1,0 +1,56 @@
+syntax = "proto3";
+package powpos.checkpoint.v1;
+
+import "amino/amino.proto";
+import "gogoproto/gogo.proto";
+import "google/api/annotations.proto";
+import "powpos/checkpoint/v1/params.proto";
+import "powpos/checkpoint/v1/checkpoint.proto";
+
+option go_package = "powpos/x/checkpoint/types";
+
+// Query defines the gRPC querier service.
+service Query {
+  // Parameters queries the parameters of the module.
+  rpc Params(QueryParamsRequest) returns (QueryParamsResponse) {
+    option (google.api.http).get = "/powpos/checkpoint/v1/params";
+  }
+
+  // QueryLatestCheckpoint returns the latest stored checkpoint.
+  rpc QueryLatestCheckpoint(QueryLatestCheckpointRequest)
+      returns (QueryLatestCheckpointResponse) {
+    option (google.api.http).get = "/powpos/checkpoint/v1/checkpoints/latest";
+  }
+
+  // QueryCheckpointByHeight returns the checkpoint stored for a block height.
+  rpc QueryCheckpointByHeight(QueryCheckpointByHeightRequest)
+      returns (QueryCheckpointByHeightResponse) {
+    option (google.api.http).get = "/powpos/checkpoint/v1/checkpoints/{height}";
+  }
+}
+
+// QueryParamsRequest is request type for the Query/Params RPC method.
+message QueryParamsRequest {}
+
+// QueryParamsResponse is response type for the Query/Params RPC method.
+message QueryParamsResponse {
+  // params holds all the parameters of this module.
+  Params params = 1 [
+    (gogoproto.nullable) = false,
+    (amino.dont_omitempty) = true
+  ];
+}
+
+message QueryLatestCheckpointRequest {}
+
+message QueryLatestCheckpointResponse {
+  Checkpoint checkpoint = 1 [(gogoproto.nullable) = false];
+}
+
+message QueryCheckpointByHeightRequest {
+  uint64 height = 1;
+}
+
+message QueryCheckpointByHeightResponse {
+  Checkpoint checkpoint = 1 [(gogoproto.nullable) = false];
+}

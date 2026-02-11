@@ -1,0 +1,14 @@
+syntax = "proto3";
+package powpos.checkpoint.v1;
+
+import "amino/amino.proto";
+import "gogoproto/gogo.proto";
+
+option go_package = "powpos/x/checkpoint/types";
+
+// Params defines the parameters for the module.
+message Params {
+  option (amino.name) = "powpos/x/checkpoint/Params";
+  option (gogoproto.equal) = true;
+  
+}
