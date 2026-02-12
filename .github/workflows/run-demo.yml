@@ -76,20 +76,46 @@ jobs:
     needs: run
     runs-on: ubuntu-latest
     permissions:
+      contents: read
       pages: write
       id-token: write
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
     steps:
+      - name: Check if GitHub Pages is enabled
+        id: pages_status
+        run: |
+          status="$(curl -s -o /tmp/pages.json -w "%{http_code}" \
+            -H "Authorization: Bearer ${{ github.token }}" \
+            -H "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/${{ github.repository }}/pages")"
+          if [ "$status" = "200" ]; then
+            echo "enabled=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "enabled=false" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Deploy to GitHub Pages
         id: deployment
+        if: steps.pages_status.outputs.enabled == 'true'
+        continue-on-error: true
         uses: actions/deploy-pages@v4
 
       - name: Add pages URL to summary
+        if: steps.pages_status.outputs.enabled == 'true' && steps.deployment.conclusion == 'success'
         run: |
           {
             echo "## Published demo page"
             echo
             echo "- URL: ${{ steps.deployment.outputs.page_url }}"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Add pages setup instructions to summary
+        if: steps.pages_status.outputs.enabled != 'true'
+        run: |
+          {
+            echo "## GitHub Pages is not enabled yet"
+            echo
+            echo "Enable it at: https://github.com/${{ github.repository }}/settings/pages"
+            echo
+            echo "Set **Source** to **GitHub Actions**."
+            echo "After enabling, push another commit to trigger a publish."
           } >> "$GITHUB_STEP_SUMMARY"
