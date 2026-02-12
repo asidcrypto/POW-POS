@@ -2,6 +2,9 @@ name: Run Go Demo
 
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - cursor/tendermint-layer-2-demo-da03
 
 jobs:
   run:
