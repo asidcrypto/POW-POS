@@ -9,6 +9,8 @@ on:
 jobs:
   run:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -24,8 +26,70 @@ jobs:
       - name: Run demo app
         run: go run ./cmd/powposdemo | tee demo-output.txt
 
+      - name: Build HTML page from demo output
+        run: |
+          mkdir -p pages
+          {
+            echo '<!doctype html>'
+            echo '<html lang="en"><head><meta charset="utf-8"><title>POW-POS Demo Output</title>'
+            echo '<style>body{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;margin:24px;background:#0b1020;color:#e5e7eb}h1{font-size:20px}a{color:#93c5fd}pre{white-space:pre-wrap;background:#111827;padding:16px;border-radius:8px;border:1px solid #374151}</style>'
+            echo '</head><body>'
+            echo '<h1>POW-POS Demo Output</h1>'
+            echo "<p>Commit: ${GITHUB_SHA}</p>"
+            echo '<pre>'
+            sed -e 's/&/\&amp;/g' -e 's/</\&lt;/g' -e 's/>/\&gt;/g' demo-output.txt
+            echo '</pre>'
+            echo '</body></html>'
+          } > pages/index.html
+
+      - name: Add clean run summary
+        run: |
+          {
+            echo "## Go Demo Run Summary"
+            echo
+            echo "- Branch: \`${GITHUB_REF_NAME}\`"
+            echo "- Commit: \`${GITHUB_SHA}\`"
+            echo "- Artifact: \`demo-output\` (download from this run)"
+            echo
+            echo "<details><summary>Demo output preview</summary>"
+            echo
+            echo '```text'
+            cat demo-output.txt
+            echo '```'
+            echo
+            echo "</details>"
+          } >> "$GITHUB_STEP_SUMMARY"
+
       - name: Upload demo output artifact
         uses: actions/upload-artifact@v4
         with:
           name: demo-output
           path: demo-output.txt
+
+      - name: Upload GitHub Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: pages
+
+  deploy-pages:
+    if: github.ref == 'refs/heads/cursor/tendermint-layer-2-demo-da03'
+    needs: run
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+
+      - name: Add pages URL to summary
+        run: |
+          {
+            echo "## Published demo page"
+            echo
+            echo "- URL: ${{ steps.deployment.outputs.page_url }}"
+          } >> "$GITHUB_STEP_SUMMARY"
