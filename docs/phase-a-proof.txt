@@ -1,0 +1,5 @@
+phase-a-regtest-txid=5fcd223282cd0a0e0506d67a9c97012b0673dc7fb296d16ef8029a452e2b62b7
+{
+  "txid": "5fcd223282cd0a0e0506d67a9c97012b0673dc7fb296d16ef8029a452e2b62b7",
+  "confirmations": 2
+}
