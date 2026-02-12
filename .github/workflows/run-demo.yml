@@ -1,0 +1,31 @@
+name: Run Go Demo
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - cursor/tendermint-layer-2-demo-da03
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: "1.22"
+
+      - name: Run demo tests
+        run: go test ./demo
+
+      - name: Run demo app
+        run: go run ./cmd/powposdemo | tee demo-output.txt
+
+      - name: Upload demo output artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: demo-output
+          path: demo-output.txt
